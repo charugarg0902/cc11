@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Love video ❤️💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;700&family=Martel:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#fff6f8; --bg2:#fffaf6; --card:#ffffff; --muted:#7b5a66;
+    --accent1:#ff7ab6; --accent2:#ffb3c6; --panel:#fff3f6;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#3b2b34}
+  .wrap{max-width:1100px;margin:28px auto;padding:18px}
+  header{display:flex;align-items:center;gap:14px}
+  .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#ffd9e6,#ffeef3);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 24px rgba(255,122,180,0.12)}
+  h1{font-family:Martel,serif;margin:0;font-size:20px}
+  .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
+
+  .layout{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:16px}
+  .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 12px 30px rgba(18,12,17,0.04)}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  textarea{width:100%;min-height:200px;padding:12px;border-radius:10px;border:1px dashed rgba(160,120,140,0.08);background:transparent;resize:vertical}
+  .row{display:flex;gap:8px;align-items:center}
+  button{cursor:pointer;border-radius:10px;padding:9px 12px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;font-weight:600}
+  .ghost{background:transparent;border:1px solid rgba(160,120,140,0.08);padding:8px 10px;border-radius:10px;color:#5b3f4a}
+  .small{font-size:13px;color:var(--muted)}
+  .scenes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+  .scene{background:var(--panel);padding:10px;border-radius:8px;font-size:13px;color:#5b3f4a;border:1px solid rgba(255,200,220,0.6)}
+  .canvas-wrap{background:#fff;border-radius:12px;overflow:hidden;border:1px solid rgba(0,0,0,0.04);position:relative}
+  canvas{display:block;width:100%;height:auto}
+  .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .progress{height:8px;background:rgba(0,0,0,0.06);border-radius:999px;margin-top:8px;overflow:hidden}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent1),var(--accent2));width:0%}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:13px}
+  .footerNote{margin-top:12px;color:var(--muted);font-size:13px}
+  .openLink{color:var(--accent1);text-decoration:none;font-weight:600;opacity:0.6}
+  @media (max-width:980px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">🐾</div>
+      <div>
+        <h1>Love video ❤️💌</h1>
+        <div class="subtitle">text to video</div>
+      </div>
+    </header>
+
+    <div class="layout" style="margin-top:18px">
+      <div>
+        <div class="card">
+          <label for="inputText">Paste your romantic text</label>
+          <textarea id="inputText">My love,
+Under the calm moon we walked hand in paw. Our paws fit together like tiny pieces of a secret map.
+
+I left a note in your pocket and the cat curled between us while we sipped warm coffee.</textarea>
+
+          <div class="controls">
+            <button id="prepareBtn">Prepare scenes</button>
+            <button id="renderBtn" disabled>Render & Record</button>
+            <button id="ttsBtn" class="ghost">Preview TTS</button>
+
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+              <div class="small">Music</div>
+              <button id="musicToggle" style="padding:8px 10px">Music: On</button>
+              <label class="ghost" style="padding:8px;border-radius:10px;cursor:pointer">
+                <input id="musicUpload" type="file" accept="audio/*" style="display:none"> Upload
+              </label>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <div style="flex:0 0 160px">
+              <label class="small">Fallback scene duration (s)</label>
+              <input id="sceneDuration" type="number" value="4" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"/>
+            </div>
+            <div style="flex:1">
+              <label class="small">Reading speed (wpm)</label>
+              <input id="readingSpeed" type="number" value="150" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"/>
+            </div>
+            <div style="flex:0 0 90px">
+              <label class="small">FPS</label>
+              <input id="fps" type="number" value="30" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)"/>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label class="small">Scenes (<span id="sceneCount">0</span>)</label>
+            <div id="scenesList" class="scenes"></div>
+          </div>
+
+          <div class="footerNote">Tip: Use short paragraphs. Include keywords (cat, moon, heart, walk, coffee) for richer visuals.</div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small">Canvas preview</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:6px">1280 × 720 — cats centered; text at bottom (2 lines)</div>
+            </div>
+            <div style="font-weight:700;color:#5b3f4a">Boy & Girl Cats</div>
+          </div>
+
+          <div style="margin-top:12px" class="canvas-wrap">
+            <canvas id="canvas" width="1280" height="720"></canvas>
+          </div>
+
+          <div class="meta">
+            <div class="small" id="progressText">Progress: 0%</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <a id="openLink" class="openLink" href="#" target="_blank">Open video</a>
+              <button id="downloadBtn" style="padding:8px 10px" disabled>Download WebM</button>
+              <button id="resetBtn" class="ghost">Reset</button>
+            </div>
+          </div>
+
+          <div class="progress"><i id="progressBar"></i></div>
+          <div class="footerNote" style="margin-top:10px">Output: WebM. For MP4 + audio, transcode via ffmpeg when needed.</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+/*
+Single-file: Boy Cat + Girl Cat in Love
+- Center area: two distinct cats (boy: bow-tie; girl: flower/headband) animate toward each other.
+- Bottom panel reserved for max 2 lines of text (professional layout).
+- Background synth (optional uploaded audio). Exports WebM via MediaRecorder.
+- Designed for Chrome/Edge. Save and open in VS Code or browser.
+*/
+
+(() => {
+  // DOM
+  const inputText = document.getElementById('inputText');
+  const prepareBtn = document.getElementById('prepareBtn');
+  const renderBtn = document.getElementById('renderBtn');
+  const ttsBtn = document.getElementById('ttsBtn');
+  const sceneCountEl = document.getElementById('sceneCount');
+  const scenesList = document.getElementById('scenesList');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d', { alpha: false });
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const openLink = document.getElementById('openLink');
+  const resetBtn = document.getElementById('resetBtn');
+  const musicToggle = document.getElementById('musicToggle');
+  const musicUpload = document.getElementById('musicUpload');
+  const sceneDurationInput = document.getElementById('sceneDuration');
+  const readingSpeedInput = document.getElementById('readingSpeed');
+  const fpsInput = document.getElementById('fps');
+
+  // state
+  let scenes = [];
+  let mediaUrl = null;
+
+  // audio
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+  let synthNodes = null;
+  let musicOn = true;
+  let uploadedAudioBuffer = null;
+  let uploadedSourceNode = null;
+
+  // tags mapping (simple)
+  const TAGS = [
+    {name:'cat', rx:/\b(cat|kitten|kitty)\b/i},
+    {name:'moon', rx:/\b(moon|moonlight|luna)\b/i},
+    {name:'walk', rx:/\b(walk|stroll|walking)\b/i},
+    {name:'heart', rx:/\b(love|heart|lovely|dear)\b/i},
+    {name:'coffee', rx:/\b(coffee|latte|cafe|cup)\b/i},
+    {name:'letter', rx:/\b(letter|note|mail|dear)\b/i},
+    {name:'flower', rx:/\b(flower|rose|flowers|bouquet)\b/i},
+    {name:'hug', rx:/\b(hug|embrace)\b/i}
+  ];
+
+  // canvas regions
+  const CANVAS_W = 1280, CANVAS_H = 720;
+  const TEXT_PANEL_H = 180;
+  const DOODLE_H = CANVAS_H - TEXT_PANEL_H;
+  canvas.width = CANVAS_W; canvas.height = CANVAS_H;
+
+  // helpers
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]); }
+
+  // split text into scenes (paragraphs & sentences)
+  function splitTextToScenes(input){
+    if (!input) return [];
+    const paragraphs = input.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+    const out = [];
+    const sentenceSplit = p => p.match(/[^.!?]+[.!?]*/g) || [p];
+    const wpm = Number(readingSpeedInput.value) || 150;
+    for (const para of paragraphs){
+      if (para.length <= 420) out.push({ text: para });
+      else {
+        const sents = sentenceSplit(para);
+        let chunk = '';
+        for (const s of sents){
+          if ((chunk + ' ' + s).trim().length > 420 && chunk.length > 80){ out.push({ text: chunk.trim() }); chunk = s; }
+          else chunk += ' ' + s;
+        }
+        if (chunk.trim()) out.push({ text: chunk.trim() });
+      }
+    }
+    return out.map(sc => {
+      const words = sc.text.split(/\s+/).filter(Boolean).length || 1;
+      const estDuration = Math.max(2, Math.round((words / wpm) * 60));
+      const tags = detectTags(sc.text);
+      return { ...sc, words, estDuration, tags, image: makeBackground(sc.text) };
+    });
+  }
+
+  function detectTags(text){
+    const found = [];
+    for (const t of TAGS) if (t.rx.test(text)) found.push(t.name);
+    return found.slice(0,3);
+  }
+
+  // make soft background (dataURL)
+  function makeBackground(text){
+    const w = CANVAS_W, h = CANVAS_H;
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d');
+    const pal = ['#fff3f6','#fffaf2','#fff7fb','#fff3f0']; const c1 = pal[Math.floor(Math.random()*pal.length)];
+    const grad = g.createLinearGradient(0,0,w,h); grad.addColorStop(0,c1); grad.addColorStop(1,'#fffaf6');
+    g.fillStyle = grad; g.fillRect(0,0,w,h);
+    // faint hearts
+    g.fillStyle = 'rgba(255,180,200,0.06)';
+    for (let i=0;i<10;i++){ drawSimpleHeart(g, Math.random()*w, Math.random()*h, 20 + Math.random()*80); g.fill(); }
+    return c.toDataURL('image/jpeg', 0.9);
+  }
+  function drawSimpleHeart(g, x, y, size){
+    const s = size/24; g.beginPath(); g.moveTo(x, y + 8*s); g.bezierCurveTo(x - 12*s, y - 2*s, x - 18*s, y + 14*s, x, y + 22*s); g.bezierCurveTo(x + 18*s, y + 14*s, x + 12*s, y - 2*s, x, y + 8*s);
+  }
+
+  // UI: render scene list
+  function renderScenesUI(){
+    scenesList.innerHTML = '';
+    scenes.forEach((s,i)=>{
+      const d=document.createElement('div'); d.className='scene';
+      d.innerHTML = `<div style="font-size:12px;color:#7a5666">Scene ${i+1} • ${s.words}w • ${s.estDuration}s</div>
+                     <div style="margin-top:6px">${escapeHtml(s.text.slice(0,120))}${s.text.length>120?'…':''}</div>
+                     <div style="margin-top:8px;font-size:12px;color:#9a6f86">tags: ${s.tags.join(', ') || 'cat'}</div>`;
+      scenesList.appendChild(d);
+    });
+    sceneCountEl.textContent = scenes.length;
+  }
+
+  // prepare
+  prepareBtn.addEventListener('click', ()=>{
+    scenes = splitTextToScenes(inputText.value || '');
+    renderScenesUI();
+    renderBtn.disabled = scenes.length === 0;
+    setProgress(0);
+  });
+
+  // TTS preview
+  ttsBtn.addEventListener('click', async ()=>{
+    if (!('speechSynthesis' in window)) return alert('TTS not supported in this browser.');
+    if (!scenes.length) return alert('Prepare scenes first.');
+    window.speechSynthesis.cancel();
+    for (const sc of scenes){
+      const u = new SpeechSynthesisUtterance(sc.text);
+      const vs = window.speechSynthesis.getVoices();
+      if (vs && vs.length) u.voice = vs[0];
+      u.rate = 1;
+      const p = new Promise(r => u.onend = r);
+      window.speechSynthesis.speak(u);
+      await p;
+    }
+  });
+
+  // audio synth + upload support
+  function ensureAudio(){ if (!audioCtx) audioCtx = new AudioCtx(); }
+  function startSynth(){
+    if (!musicOn) return; ensureAudio(); if (synthNodes) return;
+    const ctxA = audioCtx; const master = ctxA.createGain(); master.gain.value = 0.45; master.connect(ctxA.destination);
+    const pad = ctxA.createOscillator(); pad.type='sine'; pad.frequency.value = 110;
+    const padGain = ctxA.createGain(); padGain.gain.value = 0.0;
+    const filter = ctxA.createBiquadFilter(); filter.type='lowpass'; filter.frequency.value=1000;
+    pad.connect(filter); filter.connect(padGain); padGain.connect(master); pad.start();
+    const lfo = ctxA.createOscillator(); lfo.type='sine'; lfo.frequency.value=0.06;
+    const lfoGain = ctxA.createGain(); lfoGain.gain.value=0.28; lfo.connect(lfoGain); lfoGain.connect(padGain.gain); lfo.start();
+    const bellGain = ctxA.createGain(); bellGain.gain.value=0.36; bellGain.connect(master);
+    function bell(time,freq,dur=1.0){ const o=ctxA.createOscillator(); o.type='triangle'; o.frequency.value=freq; const g=ctxA.createGain(); g.gain.value=0; const f2=ctxA.createBiquadFilter(); f2.type='lowpass'; f2.frequency.value=2200; o.connect(f2); f2.connect(g); g.connect(bellGain); o.start(time); g.gain.setValueAtTime(0,time); g.gain.linearRampToValueAtTime(0.45,time+0.02); g.gain.exponentialRampToValueAtTime(0.0001,time+dur); o.stop(time+dur+0.05); }
+    let t0 = ctxA.currentTime + 0.2; const measure = 4.0;
+    function schedule(){ for (let i=0;i<4;i++){ const root = 110 * Math.pow(2,i/12); pad.frequency.setValueAtTime(root, t0 + i*measure); bell(t0 + i*measure + 0.2, 440 * Math.pow(2,(i%3)/12), 1.1); } t0 += 4*measure; setTimeout(schedule, Math.max(1500, (4*measure - 0.5)*1000)); }
+    schedule();
+    synthNodes = { pad, lfo, master };
+  }
+  function stopSynth(){ if (!synthNodes) return; try{ synthNodes.pad.stop(); synthNodes.lfo.stop(); } catch(e){} synthNodes = null; }
+  musicToggle.addEventListener('click', ()=>{ musicOn = !musicOn; musicToggle.textContent = musicOn ? 'Music: On' : 'Music: Off'; if (musicOn) startSynth(); else stopSynth(); });
+  musicUpload.addEventListener('change', async (ev)=>{ const f = ev.target.files && ev.target.files[0]; if (!f) return; ensureAudio(); const buf = await f.arrayBuffer(); uploadedAudioBuffer = await audioCtx.decodeAudioData(buf); alert('Uploaded audio ready — it will play during rendering.'); });
+
+  // progress helper
+  function setProgress(v){ progressBar.style.width = v + '%'; progressText.textContent = `Progress: ${v}%`; }
+
+  // ---- Boy & Girl cats drawing ----
+  // Draw boy cat (left) and girl cat (right). They lean toward each other and a pulsing heart sits between.
+  function drawBoyGirlCats(cctx, cx, cy, t, leanFactor){
+    // overall scale
+    const baseSize = 160;
+    const s = baseSize / 100;
+
+    // positions: left and right relative to cx
+    const gap = 160;
+    const leftX = cx - gap/2 - 30;
+    const rightX = cx + gap/2 + 30;
+    const y = cy;
+
+    // bobbing
+    const bob = Math.sin(t*2) * 6;
+
+    // boy cat (left) - bow tie
+    cctx.save(); cctx.translate(leftX, y + bob);
+    // body
+    cctx.fillStyle = '#fff1f6'; roundRect(cctx, -46*s, -6*s, 92*s, 64*s, 30*s); cctx.fill();
+    // head
+    cctx.beginPath(); cctx.arc(0, -36*s, 30*s, 0, Math.PI*2); cctx.fillStyle='#ffd6e8'; cctx.fill();
+    // ear left
+    cctx.beginPath(); cctx.moveTo(-22*s, -60*s); cctx.lineTo(-4*s, -34*s); cctx.lineTo(-40*s, -40*s); cctx.fillStyle='#ffb3c6'; cctx.fill();
+    // ear right
+    cctx.beginPath(); cctx.moveTo(22*s, -60*s); cctx.lineTo(4*s, -34*s); cctx.lineTo(40*s, -40*s); cctx.fillStyle='#ffb3c6'; cctx.fill();
+    // eyes (slightly closed)
+    const blinkLeft = Math.abs(Math.sin(t*1.8)) > 0.6;
+    cctx.fillStyle='#5a3f4a';
+    if (blinkLeft){ cctx.fillRect(-12*s, -36*s, 8*s, 2*s); cctx.fillRect(6*s, -36*s, 8*s, 2*s); }
+    else { cctx.beginPath(); cctx.arc(-8*s, -36*s, 4*s,0,Math.PI*2); cctx.fill(); cctx.beginPath(); cctx.arc(12*s, -36*s, 4*s,0,Math.PI*2); cctx.fill(); }
+    // nose
+    cctx.beginPath(); cctx.moveTo(0, -26*s); cctx.lineTo(-4*s, -20*s); cctx.lineTo(4*s, -20*s); cctx.fillStyle='#ff7ab6'; cctx.fill();
+    // whiskers
+    cctx.strokeStyle='rgba(90,63,74,0.6)'; cctx.lineWidth=1.2*s;
+    cctx.beginPath(); cctx.moveTo(-18*s,-10*s); cctx.lineTo(-40*s,-8*s); cctx.moveTo(-18*s,-4*s); cctx.lineTo(-40*s,2*s);
+    cctx.moveTo(18*s,-10*s); cctx.lineTo(40*s,-8*s); cctx.moveTo(18*s,-4*s); cctx.lineTo(40*s,2*s); cctx.stroke();
+    // bow tie
+    cctx.fillStyle='#4b2b48'; roundRect(cctx, -12*s, 4*s, 24*s, 10*s, 6*s); cctx.fill();
+    cctx.restore();
+
+    // girl cat (right) - flower/headband
+    cctx.save(); cctx.translate(rightX, y + bob);
+    cctx.fillStyle = '#fff3f4'; roundRect(cctx, -46*s, -6*s, 92*s, 64*s, 30*s); cctx.fill();
+    cctx.beginPath(); cctx.arc(0, -36*s, 30*s, 0, Math.PI*2); cctx.fillStyle='#ffe9f2'; cctx.fill();
+    // ears
+    cctx.beginPath(); cctx.moveTo(-22*s, -60*s); cctx.lineTo(-4*s, -34*s); cctx.lineTo(-40*s, -40*s); cctx.fillStyle='#ffd6e8'; cctx.fill();
+    cctx.beginPath(); cctx.moveTo(22*s, -60*s); cctx.lineTo(4*s, -34*s); cctx.lineTo(40*s, -40*s); cctx.fillStyle='#ffd6e8'; cctx.fill();
+    // eyes
+    const blinkRight = Math.abs(Math.sin(t*1.7 + 0.6)) > 0.6;
+    cctx.fillStyle='#5a3f4a';
+    if (blinkRight){ cctx.fillRect(-12*s, -36*s, 8*s, 2*s); cctx.fillRect(6*s, -36*s, 8*s, 2*s); }
+    else { cctx.beginPath(); cctx.arc(-8*s, -36*s, 4*s,0,Math.PI*2); cctx.fill(); cctx.beginPath(); cctx.arc(12*s, -36*s, 4*s,0,Math.PI*2); cctx.fill(); }
+    // nose
+    cctx.beginPath(); cctx.moveTo(0, -26*s); cctx.lineTo(-4*s, -20*s); cctx.lineTo(4*s, -20*s); cctx.fillStyle='#ff7ab6'; cctx.fill();
+    // whiskers
+    cctx.strokeStyle='rgba(90,63,74,0.6)'; cctx.lineWidth=1.2*s;
+    cctx.beginPath(); cctx.moveTo(-18*s,-10*s); cctx.lineTo(-40*s,-8*s); cctx.moveTo(-18*s,-4*s); cctx.lineTo(-40*s,2*s);
+    cctx.moveTo(18*s,-10*s); cctx.lineTo(40*s,-8*s); cctx.moveTo(18*s,-4*s); cctx.lineTo(40*s,2*s); cctx.stroke();
+    // flower headband (simple)
+    cctx.fillStyle='#ffb3c6'; cctx.beginPath(); cctx.arc(-6*s, -60*s, 8*s, 0, Math.PI*2); cctx.fill();
+    cctx.fillStyle='#fff'; cctx.beginPath(); cctx.arc(-6*s, -60*s, 3*s, 0, Math.PI*2); cctx.fill();
+    cctx.restore();
+
+    // leaning animation: slight rotation or horizontal offset toward each other
+    // already implemented via positions and bob; we can add tiny lean
+    // pulsing heart between them
+    const heartX = (leftX + rightX)/2;
+    const heartY = cy - 20 + Math.sin(t*3)*4;
+    cctx.save();
+    cctx.translate(heartX, heartY);
+    const pulse = 1 + 0.12 * Math.sin(t*3.2);
+    cctx.fillStyle = '#ff7ab6';
+    drawSmallHeart(cctx, 0, 0, 28 * pulse);
+    cctx.restore();
+
+    // tiny floating sparkles above
+    for (let i=0;i<3;i++){
+      const sx = heartX + (i-1)*28 + Math.sin(t*(i+1))*6;
+      const sy = heartY - 48 + Math.cos(t*(i+2))*6;
+      drawStar(ctx, sx, sy, 6);
+    }
+  }
+
+  // small primitives
+  function drawSmallHeart(cctx, x, y, size){
+    cctx.save(); cctx.translate(x,y);
+    cctx.beginPath(); cctx.moveTo(0, size/6); cctx.bezierCurveTo(-size/2, -size/3, -size, size/3, 0, size); cctx.bezierCurveTo(size, size/3, size/2, -size/3, 0, size/6); cctx.closePath(); cctx.fill();
+    cctx.restore();
+  }
+  function drawStar(cctx,x,y,r){
+    cctx.save(); cctx.translate(x,y); cctx.fillStyle='#fff6d9'; cctx.beginPath();
+    for (let i=0;i<5;i++){ cctx.lineTo(Math.cos((18+ i*72)*Math.PI/180)*r, -Math.sin((18+ i*72)*Math.PI/180)*r); cctx.lineTo(Math.cos((54+ i*72)*Math.PI/180)*(r/2), -Math.sin((54+ i*72)*Math.PI/180)*(r/2)); }
+    cctx.closePath(); cctx.fill(); cctx.restore();
+  }
+  function roundRect(cctx,x,y,w,h,r){ cctx.beginPath(); cctx.moveTo(x+r,y); cctx.arcTo(x+w,y,x+w,y+h,r); cctx.arcTo(x+w,y+h,x,y+h,r); cctx.arcTo(x,y+h,x,y,r); cctx.arcTo(x,y,x+w,y,r); cctx.closePath(); }
+
+  // draw bottom text panel (2 lines max)
+  function drawBottomTextPanel(text){
+    const w = CANVAS_W, h = CANVAS_H;
+    const panelH = TEXT_PANEL_H;
+    const x = 0, y = CANVAS_H - panelH;
+    ctx.fillStyle = '#fffafc'; ctx.fillRect(x, y, w, panelH);
+    ctx.fillStyle = 'rgba(230,200,215,0.6)'; ctx.fillRect(36, y+6, w-72, 2);
+    const maxWidth = w - 120;
+    ctx.fillStyle = '#4a2c3a'; ctx.textAlign = 'left'; ctx.font = '700 28px Martel, serif';
+    const lines = wrapTextToLines(text, ctx, maxWidth, 2);
+    const startY = y + 60;
+    for (let i=0;i<lines.length;i++) ctx.fillText(lines[i], 60, startY + i*40);
+  }
+
+  // wrap to max lines with ellipsis if needed
+  function wrapTextToLines(text, cctx, maxWidth, maxLines){
+    const words = text.split(/\s+/); const lines = []; let cur='';
+    for (const w of words){
+      const test = cur ? cur + ' ' + w : w;
+      if (cctx.measureText(test).width > maxWidth && cur){ lines.push(cur); cur = w; }
+      else cur = test;
+      // stop early if too many words
+      if (lines.length >= maxLines) break;
+    }
+    if (lines.length < maxLines && cur) lines.push(cur);
+    if (lines.length === maxLines){
+      const assembled = lines.join(' ') + ' ';
+      if (text.length > assembled.length){
+        let last = lines[lines.length-1];
+        while (cctx.measureText(last + '…').width > maxWidth && last.length > 0) last = last.slice(0,-1);
+        lines[lines.length-1] = last + '…';
+      }
+    }
+    return lines;
+  }
+
+  // draw full scene frame: background + doodles + bottom text
+  function drawSceneFrame(bgImg, text, tags, t, idx, total){
+    // soft background
+    ctx.clearRect(0,0,CANVAS_W,CANVAS_H);
+    // fill base gradient
+    const g = ctx.createLinearGradient(0,0,CANVAS_W,CANVAS_H); g.addColorStop(0,'#fff3f6'); g.addColorStop(1,'#fffaf6'); ctx.fillStyle = g; ctx.fillRect(0,0,CANVAS_W,CANVAS_H);
+    // soft vignette
+    ctx.globalCompositeOperation = 'multiply';
+    const vg = ctx.createRadialGradient(CANVAS_W/2, CANVAS_H/2 - 60, 200, CANVAS_W/2, CANVAS_H/2, 1000);
+    vg.addColorStop(0, 'rgba(255,255,255,0)');
+    vg.addColorStop(1, 'rgba(255,230,235,0.04)');
+    ctx.fillStyle = vg; ctx.fillRect(0,0,CANVAS_W,CANVAS_H);
+    ctx.globalCompositeOperation = 'source-over';
+
+    // doodles in center: boy+girl cats
+    const centerX = CANVAS_W/2, centerY = DOODLE_H/2 + 10;
+    drawBoyGirlCats(ctx, centerX, centerY, t);
+
+    // bottom text
+    drawBottomTextPanel(text);
+
+    // small counter top-right
+    ctx.fillStyle = 'rgba(90,63,74,0.85)'; ctx.font = '600 14px Inter, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(`Scene ${idx+1}/${total}`, CANVAS_W - 36, 28);
+  }
+
+  // ---- Media export / rendering ----
+  function setProgressVal(n){ progressBar.style.width = n + '%'; progressText.textContent = `Progress: ${n}%`; }
+
+  renderBtn.addEventListener('click', async ()=>{
+    if (!scenes.length) return alert('Prepare scenes first.');
+    // lock UI
+    prepareBtn.disabled = renderBtn.disabled = ttsBtn.disabled = true;
+    resetBtn.disabled = true;
+    setProgressVal(0);
+    if (mediaUrl){ URL.revokeObjectURL(mediaUrl); mediaUrl = null; openLink.href='#'; openLink.style.opacity = 0.6; downloadBtn.disabled = true; }
+
+    // audio start
+    if (!audioCtx && musicOn) audioCtx = new AudioCtx();
+    if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+    if (uploadedAudioBuffer && audioCtx){
+      uploadedSourceNode = audioCtx.createBufferSource(); uploadedSourceNode.buffer = uploadedAudioBuffer;
+      const g = audioCtx.createGain(); g.gain.value = 0.95; uploadedSourceNode.connect(g); g.connect(audioCtx.destination);
+      uploadedSourceNode.start();
+    } else if (musicOn) startSynth();
+
+    // capture
+    const fps = clamp(Number(fpsInput.value) || 30, 10, 60);
+    const stream = canvas.captureStream(fps);
+    let mime = 'video/webm;codecs=vp9'; if (!MediaRecorder.isTypeSupported(mime)){ mime = 'video/webm;codecs=vp8'; if (!MediaRecorder.isTypeSupported(mime)) mime = 'video/webm'; }
+    let recorder;
+    try { recorder = new MediaRecorder(stream, { mimeType: mime }); } catch (e) { alert('Recording unsupported in this browser. Use Chrome/Edge.'); enableUi(); return; }
+    const chunks = []; recorder.ondataavailable = ev => { if (ev.data && ev.data.size) chunks.push(ev.data); };
+    recorder.start(200);
+
+    const totalSec = scenes.reduce((a,b)=>a+(b.estDuration||Number(sceneDurationInput.value)||4),0);
+    let elapsed = 0;
+    for (let i=0;i<scenes.length;i++){
+      const s = scenes[i];
+      // pre-load bg image (cached)
+      const bgImg = await loadImage(s.image);
+      const duration = s.estDuration || Number(sceneDurationInput.value) || 4;
+      const start = performance.now();
+      while (performance.now() - start < duration*1000){
+        const t = (performance.now() - start)/1000;
+        // draw bg image softly
+        ctx.globalAlpha = 0.95;
+        ctx.drawImage(bgImg, 0, 0, CANVAS_W, CANVAS_H);
+        ctx.globalAlpha = 1;
+        drawSceneFrame(bgImg, s.text, s.tags, t, i, scenes.length);
+        await sleep(1000 / fps);
+      }
+      elapsed += duration;
+      setProgressVal(Math.round((elapsed/totalSec)*100));
+    }
+
+    // finish
+    await sleep(150);
+    const stopped = new Promise(r => recorder.onstop = r); recorder.stop(); await stopped;
+    if (uploadedSourceNode){ try{ uploadedSourceNode.stop(); } catch(e){} uploadedSourceNode = null; }
+    const blob = new Blob(chunks, { type: mime });
+    mediaUrl = URL.createObjectURL(blob);
+    openLink.href = mediaUrl; openLink.style.opacity = 1; downloadBtn.disabled = false; downloadBtn.onclick = ()=>downloadBlob(blob, 'boygirl-cats.webm');
+    enableUi(); setProgressVal(100);
+  });
+
+  function enableUi(){ prepareBtn.disabled = false; renderBtn.disabled = false; ttsBtn.disabled = false; resetBtn.disabled = false; }
+
+  resetBtn.addEventListener('click', ()=>{ scenes = []; scenesList.innerHTML=''; sceneCountEl.textContent='0'; renderBtn.disabled=true; setProgressVal(0); if (mediaUrl){ URL.revokeObjectURL(mediaUrl); mediaUrl = null; openLink.href='#'; openLink.style.opacity=0.6; downloadBtn.disabled=true; } });
+
+  // ---- image loader cache ----
+  const imgCache = new Map();
+  function loadImage(dataUrl){ return new Promise(res=>{ if (imgCache.has(dataUrl)) return res(imgCache.get(dataUrl)); const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>{ imgCache.set(dataUrl, im); res(im); }; im.onerror=()=>{ const c=document.createElement('canvas'); c.width=CANVAS_W; c.height=CANVAS_H; const g=c.getContext('2d'); g.fillStyle='#fff7f9'; g.fillRect(0,0,c.width,c.height); const im2=new Image(); im2.src=c.toDataURL('image/jpeg'); imgCache.set(dataUrl, im2); im2.onload=()=>res(im2); }; im.src=dataUrl; }); }
+
+  // ---- misc small helpers ----
+  function downloadBlob(blob, name){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove(); }
+
+  // begin with synth muted until user gesture
+  prepareBtn.addEventListener('click', ()=>{ try{ if (audioCtx && audioCtx.state==='suspended') audioCtx.resume(); } catch(e){} });
+
+  // ensure voices
+  if (window.speechSynthesis && !window.speechSynthesis.getVoices().length) window.speechSynthesis.onvoiceschanged = ()=>{};
+
+  // initial UI
+  renderBtn.disabled = true; openLink.style.opacity = 0.6;
+})();
+</script>
+</body>
+</html>
